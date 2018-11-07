@@ -14,13 +14,19 @@ class Config extends Extension
      */
     public static function load()
     {
-        foreach (ConfigModel::all(['name', 'value']) as $config) {
+        $prefix = config('admin.extensions.config.prefix', "");
+        if (!empty($prefix)) $prefix .= ".";
+
+        foreach (ConfigModel::all([
+            'name',
+            'value'
+        ]) as $config) {
             if (config($config['name']) == null) {
-                config([$config['name'] => $config['value']]);
+                config([$prefix . $config['name'] => $config['value']]);
             } else {
                 if (config('admin.extensions.config.override_app_config', false)) {
-                    config([$config['name'] => $config['value']]);
-                }else{
+                    config([$prefix . $config['name'] => $config['value']]);
+                } else {
                     throw new \Exception("config with name of " . $config['name']
                         . " exist in app config files!, please change name");
                 }
